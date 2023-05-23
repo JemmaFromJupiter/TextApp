@@ -1,0 +1,5 @@
+Copyright JemmaFromJupiter on GitHub
+
+This is a simple text editor that supports the creation
+of simple text files and more, You are able to run python programs,
+that is the biggest limitation.

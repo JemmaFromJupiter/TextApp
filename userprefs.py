@@ -1,0 +1,2 @@
+linewrap = "word"
+theme = "DarkBlack"
