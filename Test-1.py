@@ -4,11 +4,12 @@ import PySimpleGUI as sg
 import os
 import themes, defaultLayouts, clipboard_funcs
 import autopep8
-import userprefs
+import toml as tmlb
 
 """Text Editor 1.0"""
 
 themes.init_themes()
+config = tmlb.load(f"{os.getcwd()}/config.toml")
 
 class App():
 
@@ -192,10 +193,11 @@ class userPrefs(App):
 		self.window = self.make_window(defaultLayouts.makeUserPrefs_layout(self.window_dims, self.theme), resizable=True, finalize=True)
 	
 	def save_client_preferences(self):
-		with open("userprefs.py", "w") as up:
-			up.write(
-				f"linewrap = \"{userprefs.linewrap}\"\ntheme = \"{userprefs.theme}\""
-				)
+		with open(f"{os.getcwd()}/config.toml", "wb") as up:
+			up.seek(0)
+			up.write(bytes(tmlb.dumps(config).encode("utf-8")))
+			up.truncate()
+			up.close()
 
 	def mainloop(self):
 		while True:
@@ -205,9 +207,9 @@ class userPrefs(App):
 				self.window.close()
 				break
 			if event == "Save":
-				userprefs.linewrap = values["-LWPREF-"]
+				config["user"]["linewrap"] = values["-LWPREF-"]
 				if values["-THPREF-"]:
-					userprefs.theme = values['-THPREF-'][0]
+					config["user"]["theme"] = values["-THPREF-"][0]
 				self.save_client_preferences()
 				self.window.close()
 				break
@@ -241,11 +243,11 @@ class MainApp(App):
 		self.m1.widget.bindtags((str(self.m1.widget), str(self.window.TKroot), "all"))
 		self.m2.bind('<Configure>', '')
 		self.m2.bind('<MouseWheel>', '')
-		self.ratio, self.lines = 0, 1
+		self.ratio, self.lines = 0, 0
 		self.configureTextEditSettings()
 
 	def configureTextEditSettings(self):
-		self.m2.widget.config(wrap=userprefs.linewrap)
+		self.m2.widget.config(wrap=config["user"]["linewrap"])
 		self.window.refresh()
 		
 
@@ -256,7 +258,7 @@ class MainApp(App):
 
 	def mainloop(self):
 		while True:
-			try:
+			#try:
 				event, values = self.window.read()
 				print(event, values)
 				if event in (sg.WIN_CLOSED, "Exit"):
@@ -367,14 +369,14 @@ class MainApp(App):
 				if event == "Preferences":
 					self.prefs = userPrefs("Preferences", self.window_dims, self.theme)
 					self.prefs.mainloop()
-					self.theme = userprefs.theme
+					self.theme = config["user"]["theme"]
 					self.window.close()
 					self.window = self.make_window(defaultLayouts.makeMain_layout(self.window_dims, self.theme), resizable=True, finalize=True)
 
 				self.configure_lineNums()
-			except Exception as err:
-				raise Exception("Unexpected Error Occurred: Fuck This\n\n", err)
+			#except Exception as err:
+				#raise Exception("Unexpected Error Occurred: Fuck This\n\n", err)
 
 					
-appWin = MainApp("Text Editor 0.0.3", (750, 750), userprefs.theme)
+appWin = MainApp(f"{config['client']['client_name']} {config['client']['client_version']}", config["client"]["client_dimensions"], config["user"]["theme"])
 appWin.mainloop()

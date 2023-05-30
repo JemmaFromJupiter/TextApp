@@ -1,8 +1,10 @@
 from __future__ import annotations
 import PySimpleGUI as sg
-import userprefs
 import os
 import sys
+import toml as tmlb
+
+config = tmlb.load(f"{os.getcwd()}/config.toml")
 
 sys.setrecursionlimit(10000)
 
@@ -39,7 +41,11 @@ def makeAbout_layout(dims: tuple[int], theme: str):
 		sg.theme(theme)
 
 	info_tab = [
-		[sg.Text(open("about.txt", "r").read())]
+		[sg.Text(f"""
+Owner: {config["owner"]["name"]}
+
+{config['client']['description']['desc']}
+""")]
 	]
 
 	keyBinds_tab = [
@@ -148,7 +154,7 @@ def makeUserPrefs_layout(dims: tuple[int], theme: str):
 		sg.theme(theme)
 	layout = [
 		[sg.Text("linewrap: ")],
-		[sg.Combo(["word", "none"], expand_x=True, default_value=userprefs.linewrap, k="-LWPREF-", readonly=True)],
+		[sg.Combo(["word", "none"], expand_x=True, default_value=config["user"]["linewrap"], k="-LWPREF-", readonly=True)],
 		[sg.Text("Theme: ")],
 		[sg.Listbox(sg.theme_list(), expand_x=True, expand_y=True, k="-THPREF-")],
 		[sg.Button("Save"), sg.Button("Cancel")]
@@ -168,7 +174,7 @@ def makeMain_layout(dims: tuple[int], theme: str):
 	editor_layout = sg.Col([
 		[
 			sg.Multiline(size=(3, dims[1]), pad=(0, 0), justification="right", expand_x=True, expand_y=True, k="line_nums", write_only=True, no_scrollbar=True),
-			sg.Multiline(size=dims, pad=(0, 0), horizontal_scroll=True, sbar_width=3, sbar_arrow_width=3, justification="left", expand_x=True, expand_y=True, k="-EDITBOX-", focus=True, right_click_menu=["", ["Copy", "Paste", "Cut", "Select All", "Rich Text Options", ["Bold", "Italics", "Underline"]]])
+			sg.Multiline(size=dims, pad=(0, 0), horizontal_scroll=True, sbar_width=3, sbar_arrow_width=3, justification="left", expand_x=True, expand_y=True, k="-EDITBOX-", enable_events=True, focus=True, right_click_menu=["", ["Copy", "Paste", "Cut", "Select All"]])
    ]])
 
 	MainWindow_layout = [
