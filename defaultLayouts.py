@@ -160,7 +160,7 @@ def makeMain_layout(dims: tuple[int], theme: str):
 		sg.theme(theme)
 	MenuBar_layout = [['&File', ['&New File', '&Open File', '&Save File', "&Save As", '&Properties', ['&Create Theme', "&Preferences"], 'E&xit']],
 				['&Edit', ['&Copy', '&Paste', '!&Undo', '&Redo']],
-								['&Tools', ['&Run Code', '&Format Code', "&Terminal", '!&Debugger']],
+								['&Tools', ['&Run Code', '&Format Code', "&Terminal"]],
 				['&Help', ['&About...']], ]
 	
 	fileBrowse_layout = sg.Col([[sg.Tree(get_dir_contents("", os.getcwd(), sg.TreeData()), expand_x=True, expand_y=True, k="-FOLDERTREE-", headings=["Size", ], enable_events=True, right_click_menu=["", ["Delete File"]])]])

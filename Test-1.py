@@ -1,13 +1,9 @@
 from __future__ import annotations
 import PySimpleGUI as sg
 #from colours import *
-import threading
 import os
 import themes, defaultLayouts, clipboard_funcs
 import autopep8
-import pygments
-from pygments.lexers import PythonLexer
-from pygments.formatters import HtmlFormatter
 import userprefs
 
 """Text Editor 1.0"""
@@ -260,121 +256,124 @@ class MainApp(App):
 
 	def mainloop(self):
 		while True:
-			event, values = self.window.read()
-			print(event, values)
-			if event in (sg.WIN_CLOSED, "Exit"):
-				self.window.close()
-				break
-			if event == "New File":
-				self.fileFuncs.saveFile(self.currentFileName, self.window["-EDITBOX-"])
-				self.window['-EDITBOX-'].update(value="")
-				self.currentFileName = None
-				self.window.set_title("Text Editor 0.0.3")
-			if event == "Open File":
-				file_opened = self.fileFuncs.openFile(self.window["-EDITBOX-"])
-				if file_opened:
-					self.currentFileName = file_opened
-					self.file_extension = self.currentFileName.split(".")[1]
-					self.window.set_title(self.currentFileName)
-			if event == "Save File":
-				saved_file = self.fileFuncs.saveFile(self.currentFileName, self.window["-EDITBOX-"])
-				if saved_file:
-					self.currentFileName = saved_file
-					self.file_extension = self.currentFileName.split(".")[1]
-					self.window.set_title(self.currentFileName)
-			if event == "Save As":
-				saved_file = self.fileFuncs.saveFileAs(self.window["-EDITBOX-"])
-				if saved_file:
-					self.currentFileName = saved_file
-					self.file_extension = self.currentFileName.split(".")[1]
-					self.window_dims = self.window.size
-					self.editboxValue = self.window["-EDITBOX-"].get()
-					self.window_location = self.window.current_location()
+			try:
+				event, values = self.window.read()
+				print(event, values)
+				if event in (sg.WIN_CLOSED, "Exit"):
 					self.window.close()
-					self.window = self.make_window(defaultLayouts.makeMain_layout(self.window_dims, self.theme), resizable=True, finalize=True)
-					self.window.set_title(self.currentFileName)
-			if event == "Run Code":
-				if self.currentFileName is not None:
+					break
+				if event == "New File":
+					self.fileFuncs.saveFile(self.currentFileName, self.window["-EDITBOX-"])
+					self.window['-EDITBOX-'].update(value="")
+					self.currentFileName = None
+					self.window.set_title("Text Editor 0.0.3")
+				if event == "Open File":
+					file_opened = self.fileFuncs.openFile(self.window["-EDITBOX-"])
+					if file_opened:
+						self.currentFileName = file_opened
+						self.file_extension = self.currentFileName.split(".")[1]
+						self.window.set_title(self.currentFileName)
+				if event == "Save File":
 					saved_file = self.fileFuncs.saveFile(self.currentFileName, self.window["-EDITBOX-"])
 					if saved_file:
 						self.currentFileName = saved_file
 						self.file_extension = self.currentFileName.split(".")[1]
 						self.window.set_title(self.currentFileName)
-					self.console = Console("Console", (500, 500), theme=self.theme)
-					self.console.window["-OUTPUT-"].update(disabled=False)
-					cmd = ""
-					if self.file_extension == "py":
-						cmd = "python3"
-					sp = sg.execute_command_subprocess(cmd, self.currentFileName, pipe_output=True, wait=False)
-					results = sg.execute_get_results(sp, timeout=1)
-					print(results[0])
-					self.console.mainloop()
-				else:
-					sg.popup_error("File is Empty or Non-Existant!")
-			if event == "-FOLDERTREE-":
-				try:
-					self.window["-EDITBOX-"].update(value=open(values["-FOLDERTREE-"][0], "r").read())
-					self.currentFileName = values["-FOLDERTREE-"][0]
-					self.file_extension = self.currentFileName.split(".")[1]
-					self.window.set_title(self.currentFileName)
-				except:
-					print("Could not do that!")
-			if event == "Choose Theme":
-				self.themeSelector = themeSelector("Select Theme", self.window_dims, self.theme)
-				selected_theme = self.themeSelector.mainloop()
-				if selected_theme:
-					self.theme = selected_theme
+				if event == "Save As":
+					saved_file = self.fileFuncs.saveFileAs(self.window["-EDITBOX-"])
+					if saved_file:
+						self.currentFileName = saved_file
+						self.file_extension = self.currentFileName.split(".")[1]
+						self.window_dims = self.window.size
+						self.editboxValue = self.window["-EDITBOX-"].get()
+						self.window_location = self.window.current_location()
+						self.window.close()
+						self.window = self.make_window(defaultLayouts.makeMain_layout(self.window_dims, self.theme), resizable=True, finalize=True)
+						self.window.set_title(self.currentFileName)
+				if event == "Run Code":
+					if self.currentFileName is not None:
+						saved_file = self.fileFuncs.saveFile(self.currentFileName, self.window["-EDITBOX-"])
+						if saved_file:
+							self.currentFileName = saved_file
+							self.file_extension = self.currentFileName.split(".")[1]
+							self.window.set_title(self.currentFileName)
+						self.console = Console("Console", (500, 500), theme=self.theme)
+						self.console.window["-OUTPUT-"].update(disabled=False)
+						cmd = ""
+						if self.file_extension == "py":
+							cmd = "python3"
+						sp = sg.execute_command_subprocess(cmd, self.currentFileName, pipe_output=True, wait=False)
+						results = sg.execute_get_results(sp, timeout=1)
+						print(results[0])
+						self.console.mainloop()
+					else:
+						sg.popup_error("File is Empty or Non-Existant!")
+				if event == "-FOLDERTREE-":
+					try:
+						self.window["-EDITBOX-"].update(value=open(values["-FOLDERTREE-"][0], "r").read())
+						self.currentFileName = values["-FOLDERTREE-"][0]
+						self.file_extension = self.currentFileName.split(".")[1]
+						self.window.set_title(self.currentFileName)
+					except:
+						print("Could not do that!")
+				if event == "Choose Theme":
+					self.themeSelector = themeSelector("Select Theme", self.window_dims, self.theme)
+					selected_theme = self.themeSelector.mainloop()
+					if selected_theme:
+						self.theme = selected_theme
+						self.window_dims = self.window.size
+						self.editboxValue = self.window["-EDITBOX-"].get()
+						self.window_location = self.window.current_location()
+						self.window.close()
+						self.window = self.make_window(defaultLayouts.makeMain_layout(self.window_dims, self.theme), resizable=True, finalize=True, location=self.window_location)
+						self.window["-EDITBOX-"].update(value=self.editboxValue)
+				if event == "Delete File":
+					self.fileFuncs.deleteFile(values['-FOLDERTREE-'])
+					self.window['-FOLDERTREE-'].update(values=sg.TreeData())
 					self.window_dims = self.window.size
-					self.editboxValue = self.window["-EDITBOX-"].get()
-					self.window_location = self.window.current_location()
 					self.window.close()
-					self.window = self.make_window(defaultLayouts.makeMain_layout(self.window_dims, self.theme), resizable=True, finalize=True, location=self.window_location)
-					self.window["-EDITBOX-"].update(value=self.editboxValue)
-			if event == "Delete File":
-				self.fileFuncs.deleteFile(values['-FOLDERTREE-'])
-				self.window['-FOLDERTREE-'].update(values=sg.TreeData())
-				self.window_dims = self.window.size
-				self.window.close()
-				self.window = self.make_window(defaultLayouts.makeMain_layout(self.window_dims, self.theme), resizable=True, finalize=True)
-			if event in self.right_click_menu[1]:
-				clipboard_funcs.do_clipboard_event(event, self.window, self.window["-EDITBOX-"])
-			if event == "Redo":
-				clipboard_funcs.redo(self.text)
-			if event == "About...":
-				self.window_dims = self.window.size
-				self.about = About("About", self.window_dims, self.theme)
-				self.about.mainloop()
-			if event == "Create Theme":
-				self.window_dims = self.window.size
-				self.creThme = ThemeCreator("Theme Creator", self.window_dims, self.theme)
-				self.creThme.mainloop()
-				themes.init_themes()
-			if event == "Format Code":
-				autopep8.fix_file(self.currentFileName)
-				self.window["-EDITBOX-"].update(value=open(self.currentFileName, "r").read())
-			if event == "Terminal":
-				self.terminal = Terminal("Terminal Window", self.window_dims, self.theme)
-				self.terminal.mainloop()
-			if event in ('-EDITBOX-', "Open File", "-FOLDERTREE-"):
-				self.window.refresh()
-				new_ratio, _ = self.m2.vsb.get()
-				new_lines = int(self.m2.widget.index(sg.tk.END).split('.')[0]) - 1
-				if new_lines != self.lines:
-					self.lines=new_lines
-					text = '\n'.join([f'{i+1} ' for i in range(self.lines)])
-					current = int(self.m2.widget.index(sg.tk.INSERT).split('.')[0])
-					self.m1.update(text)
-				if new_ratio != self.ratio:
-					self.ratio = new_ratio
-					self.m1.set_vscroll_position(self.ratio+(self.ratio//2))
-			if event == "Preferences":
-				self.prefs = userPrefs("Preferences", self.window_dims, self.theme)
-				self.prefs.mainloop()
-				self.theme = userprefs.theme
-				self.window.close()
-				self.window = self.make_window(defaultLayouts.makeMain_layout(self.window_dims, self.theme), resizable=True, finalize=True)
+					self.window = self.make_window(defaultLayouts.makeMain_layout(self.window_dims, self.theme), resizable=True, finalize=True)
+				if event in self.right_click_menu[1]:
+					clipboard_funcs.do_clipboard_event(event, self.window, self.window["-EDITBOX-"])
+				if event == "Redo":
+					clipboard_funcs.redo(self.text)
+				if event == "About...":
+					self.window_dims = self.window.size
+					self.about = About("About", self.window_dims, self.theme)
+					self.about.mainloop()
+				if event == "Create Theme":
+					self.window_dims = self.window.size
+					self.creThme = ThemeCreator("Theme Creator", self.window_dims, self.theme)
+					self.creThme.mainloop()
+					themes.init_themes()
+				if event == "Format Code":
+					autopep8.fix_file(self.currentFileName)
+					self.window["-EDITBOX-"].update(value=open(self.currentFileName, "r").read())
+				if event == "Terminal":
+					self.terminal = Terminal("Terminal Window", self.window_dims, self.theme)
+					self.terminal.mainloop()
+				if event in ('-EDITBOX-', "Open File", "-FOLDERTREE-"):
+					self.window.refresh()
+					new_ratio, _ = self.m2.vsb.get()
+					new_lines = int(self.m2.widget.index(sg.tk.END).split('.')[0]) - 1
+					if new_lines != self.lines:
+						self.lines=new_lines
+						text = '\n'.join([f'{i+1} ' for i in range(self.lines)])
+						current = int(self.m2.widget.index(sg.tk.INSERT).split('.')[0])
+						self.m1.update(text)
+					if new_ratio != self.ratio:
+						self.ratio = new_ratio
+						self.m1.set_vscroll_position(self.ratio+(self.ratio//2))
+				if event == "Preferences":
+					self.prefs = userPrefs("Preferences", self.window_dims, self.theme)
+					self.prefs.mainloop()
+					self.theme = userprefs.theme
+					self.window.close()
+					self.window = self.make_window(defaultLayouts.makeMain_layout(self.window_dims, self.theme), resizable=True, finalize=True)
 
-			self.configure_lineNums()
+				self.configure_lineNums()
+			except Exception as err:
+				raise Exception("Unexpected Error Occurred: Fuck This\n\n", err)
 
 					
 appWin = MainApp("Text Editor 0.0.3", (750, 750), userprefs.theme)
