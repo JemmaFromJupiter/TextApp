@@ -10,7 +10,7 @@ Text Editor App Without All Of The Annoying Replit Files
 ---
 ## HOW TO INSTALL
 
-### Download the project and put it in the "Programs" directory of your computer and create a shortcut to the bat file labelled "textEditor" and place the shortcut on your desktop.
+<p>Download the project and put it in the "Programs" directory of your computer and create a shortcut to the bat file labelled "textEditor" and place the shortcut on your desktop.</p>
 ---
 ## MY PROCESS
 
