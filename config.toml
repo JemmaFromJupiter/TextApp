@@ -7,7 +7,7 @@ name = "Jemma Starecki"
 [client]
 client_name = "Jupiter Edits"
 client_version = "1.0.2"
-client_dimensions = [ 700, 700]
+client_dimensions = [700, 700]
 [client.description]
 desc = """
 Copyright JemmaFromJupiter on GitHub
