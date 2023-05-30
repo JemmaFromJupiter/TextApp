@@ -1,2 +1,0 @@
-linewrap = "word"
-theme = "DarkBlack"
