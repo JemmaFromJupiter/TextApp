@@ -258,7 +258,7 @@ class MainApp(App):
 
 	def mainloop(self):
 		while True:
-			#try:
+			try:
 				event, values = self.window.read()
 				print(event, values)
 				if event in (sg.WIN_CLOSED, "Exit"):
@@ -299,12 +299,13 @@ class MainApp(App):
 							self.currentFileName = saved_file
 							self.file_extension = self.currentFileName.split(".")[1]
 							self.window.set_title(self.currentFileName)
-						self.console = Console("Console", (500, 500), theme=self.theme)
-						self.console.window["-OUTPUT-"].update(disabled=False)
+						self.console = Console("Console", self.window.size, theme=self.theme)
+						self.console.window["-OUTPUT-"].update(disabled=True)
 						cmd = ""
 						if self.file_extension == "py":
 							cmd = "python3"
-						sp = sg.execute_command_subprocess(cmd, self.currentFileName, pipe_output=True, wait=False)
+						print(self.currentFileName)
+						sp = sg.execute_command_subprocess(cmd, str(self.currentFileName), pipe_output=True, wait=False)
 						results = sg.execute_get_results(sp, timeout=1)
 						print(results[0])
 						self.console.mainloop()
@@ -372,10 +373,17 @@ class MainApp(App):
 					self.theme = config["user"]["theme"]
 					self.window.close()
 					self.window = self.make_window(defaultLayouts.makeMain_layout(self.window_dims, self.theme), resizable=True, finalize=True)
+				if event == "dirnm":
+					config["user"]["browsing_dir"] = values["dirnm"]
+					self.prefs = userPrefs("Preferences", self.window_dims, self.theme)
+					self.prefs.save_client_preferences()
+					self.prefs.window.close()
+					self.window.close()
+					self.window = self.make_window(defaultLayouts.makeMain_layout(self.window_dims, self.theme), resizable=True, finalize=True)
 
 				self.configure_lineNums()
-			#except Exception as err:
-				#raise Exception("Unexpected Error Occurred: Fuck This\n\n", err)
+			except Exception as err:
+				raise Exception("Unexpected Error Occurred: Fuck This\n\n", err)
 
 					
 appWin = MainApp(f"{config['client']['client_name']} {config['client']['client_version']}", config["client"]["client_dimensions"], config["user"]["theme"])

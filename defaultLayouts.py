@@ -1,7 +1,7 @@
 from __future__ import annotations
 import PySimpleGUI as sg
 import os
-import sys
+import sys, time
 import toml as tmlb
 
 config = tmlb.load(f"{os.getcwd()}/config.toml")
@@ -29,11 +29,23 @@ def get_dir_contents(parent, dirname, treedata):
 	files = os.listdir(dirname)
 	for f in files:
 		fullname = os.path.join(dirname, f)
-		if os.path.isdir(fullname):
-			treedata.Insert(parent, fullname, f, values=[], icon=folder_icon)
-			get_dir_contents(fullname, fullname, treedata)
-		else:
-			treedata.Insert(parent, fullname, f, values=[os.stat(fullname).st_size], icon=file_icon)
+		splt_fullname = fullname.split("\\")
+		idx = 0
+		for _ in splt_fullname:
+			idx += 1
+			if _ not in config["client"]["client_hidden"] and idx == len(splt_fullname):
+				if "." in _:
+					_ = _.split(".")
+					if _[1] not in config["client"]["client_hidden"]:
+						treedata.Insert(parent, fullname, f, values=[os.stat(fullname).st_size], icon=file_icon)
+						break
+				if os.path.isdir(fullname):
+					treedata.Insert(parent, fullname, f, values=[], icon=folder_icon)
+					get_dir_contents(fullname, fullname, treedata)
+				else:
+					treedata.Insert(parent, fullname, f, values=[os.stat(fullname).st_size], icon=file_icon)
+				idx = 0
+				break
 	return treedata
 
 def makeAbout_layout(dims: tuple[int], theme: str):
@@ -162,15 +174,20 @@ def makeUserPrefs_layout(dims: tuple[int], theme: str):
 	return layout
 
 def makeMain_layout(dims: tuple[int], theme: str):
+	config = tmlb.load(f"{os.getcwd()}/config.toml")
 	if theme:
 		sg.theme(theme)
-	MenuBar_layout = [['&File', ['&New File', '&Open File', '&Save File', "&Save As", '&Properties', ['&Create Theme', "&Preferences"], 'E&xit']],
-				['&Edit', ['&Copy', '&Paste', '!&Undo', '&Redo']],
-								['&Tools', ['&Run Code', '&Format Code', "&Terminal"]],
-				['&Help', ['&About...']], ]
-	
-	fileBrowse_layout = sg.Col([[sg.Tree(get_dir_contents("", os.getcwd(), sg.TreeData()), expand_x=True, expand_y=True, k="-FOLDERTREE-", headings=["Size", ], enable_events=True, right_click_menu=["", ["Delete File"]])]])
+	MenuBar_layout = [
+		['&File', ['&New File', '&Open File', '&Save File', "&Save As", '&Properties', ['&Create Theme', "&Preferences"], 'E&xit']],
+		['&Edit', ['&Copy', '&Paste', '!&Undo', '&Redo']],
+		['&Tools', ['&Run Code', '&Format Code', "&Terminal"]],
+		['&Help', ['&About...']]
+		]
 
+	if config["user"]["browsing_dir"] == "current":
+		fileBrowse_layout = sg.Col([[sg.Text("Select Directory to Browse", expand_x=True), sg.Input(enable_events=True, visible=False, k="dirnm"), sg.FolderBrowse(enable_events=True, k="dirnm_")],[sg.Tree(get_dir_contents("", os.getcwd(), sg.TreeData()), vertical_scroll_only=False, expand_x=True, expand_y=True, k="-FOLDERTREE-", headings=["Size", ], enable_events=True, right_click_menu=["", ["Delete File"]])]])
+	else:
+		fileBrowse_layout = sg.Col([[sg.Text("Select Directory to Browse", expand_x=True), sg.Input(enable_events=True, visible=False, k="dirnm"), sg.FolderBrowse(enable_events=True, k="dirnm_")],[sg.Tree(get_dir_contents("", config["user"]["browsing_dir"], sg.TreeData()), vertical_scroll_only=False, expand_x=True, expand_y=True, k="-FOLDERTREE-", headings=["Size", ], enable_events=True, right_click_menu=["", ["Delete File"]])]])
 	editor_layout = sg.Col([
 		[
 			sg.Multiline(size=(3, dims[1]), pad=(0, 0), justification="right", expand_x=True, expand_y=True, k="line_nums", write_only=True, no_scrollbar=True),

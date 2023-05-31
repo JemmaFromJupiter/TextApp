@@ -3,19 +3,16 @@ title = "Configuration TOML"
 [owner]
 name = "Jemma Starecki"
 
-# Client side config (App name, Dimensions)
 [client]
 client_name = "Jupiter Edits"
 client_version = "1.0.2"
-client_dimensions = [700, 700]
-[client.description]
-desc = """
-Copyright JemmaFromJupiter on GitHub
-
-This is a simple text editor that supports the creation
-of simple text files and more, You are able to run python programs,
-that is the biggest limitation."""
+client_dimensions = [ 700, 700,]
+client_hidden = [ "toml", "md", "gitignore", "pyc", "bat", "__pycache__",]
 
 [user]
 linewrap = "word"
-theme = "DarkBlack"
+theme = "newbie"
+browsing_dir = "C:/Users/16282005/Desktop/programs/Huffman_Tests"
+
+[client.description]
+desc = "Copyright JemmaFromJupiter on GitHub\n\nThis is a simple text editor that supports the creation\nof simple text files and more, You are able to run python programs,\nthat is the biggest limitation."
