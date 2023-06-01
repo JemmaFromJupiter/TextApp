@@ -5,7 +5,7 @@ name = "Jemma Starecki"
 
 [client]
 client_name = "Jupiter Edits"
-client_version = "1.0.2"
+client_version = "1.1.2"
 client_dimensions = "1280x720"
 client_hidden = [ "toml", "md", "gitignore", "pyc", "bat", "__pycache__"]
 
