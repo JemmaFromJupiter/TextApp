@@ -6,13 +6,13 @@ name = "Jemma Starecki"
 [client]
 client_name = "Jupiter Edits"
 client_version = "1.0.2"
-client_dimensions = [ 700, 700,]
-client_hidden = [ "toml", "md", "gitignore", "pyc", "bat", "__pycache__",]
+client_dimensions = "1280x720"
+client_hidden = [ "toml", "md", "gitignore", "pyc", "bat", "__pycache__"]
 
 [user]
 linewrap = "word"
-theme = "newbie"
-browsing_dir = "C:/Users/16282005/Desktop/programs/Huffman_Tests"
+theme = "DarkAmber"
+browsing_dir = "current"
 
 [client.description]
 desc = "Copyright JemmaFromJupiter on GitHub\n\nThis is a simple text editor that supports the creation\nof simple text files and more, You are able to run python programs,\nthat is the biggest limitation."

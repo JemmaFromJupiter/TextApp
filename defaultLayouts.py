@@ -26,6 +26,7 @@ default_theme = """{
 }"""
 
 def get_dir_contents(parent, dirname, treedata):
+	config = tmlb.load(f"{os.getcwd()}/config.toml")
 	files = os.listdir(dirname)
 	for f in files:
 		fullname = os.path.join(dirname, f)
@@ -36,9 +37,12 @@ def get_dir_contents(parent, dirname, treedata):
 			if _ not in config["client"]["client_hidden"] and idx == len(splt_fullname):
 				if "." in _:
 					_ = _.split(".")
+					print(_[1] not in config["client"]["client_hidden"])
 					if _[1] not in config["client"]["client_hidden"]:
 						treedata.Insert(parent, fullname, f, values=[os.stat(fullname).st_size], icon=file_icon)
 						break
+					else:
+						continue
 				if os.path.isdir(fullname):
 					treedata.Insert(parent, fullname, f, values=[], icon=folder_icon)
 					get_dir_contents(fullname, fullname, treedata)
@@ -49,6 +53,7 @@ def get_dir_contents(parent, dirname, treedata):
 	return treedata
 
 def makeAbout_layout(dims: tuple[int], theme: str):
+	config = tmlb.load(f"{os.getcwd()}/config.toml")
 	if theme:
 		sg.theme(theme)
 
@@ -80,6 +85,7 @@ Owner: {config["owner"]["name"]}
 	return layout
 
 def makeTerminal_layout(dims: tuple, theme: str):
+	config = tmlb.load(f"{os.getcwd()}/config.toml")
 	if theme:
 		sg.theme(theme)
 	layout = [
@@ -89,6 +95,7 @@ def makeTerminal_layout(dims: tuple, theme: str):
 	return layout
 
 def makeConsole_layout(dims: tuple[int], theme: str):
+	config = tmlb.load(f"{os.getcwd()}/config.toml")
 	if theme:
 		sg.theme(theme)
 	layout = [
@@ -97,6 +104,7 @@ def makeConsole_layout(dims: tuple[int], theme: str):
 	return layout
 
 def makeTh_layout(dims: tuple[int], theme: str):
+	config = tmlb.load(f"{os.getcwd()}/config.toml")
 	if theme:
 		sg.theme(theme)
 	layout = [
@@ -106,6 +114,7 @@ def makeTh_layout(dims: tuple[int], theme: str):
 	return layout
 
 def makeTheme_layout(dims: tuple[int], theme: str):
+	config = tmlb.load(f"{os.getcwd()}/config.toml")
 	if theme:
 		sg.theme(theme)
 
@@ -162,13 +171,19 @@ def makeTheme_layout(dims: tuple[int], theme: str):
 	return ThemeCreator_layout
 
 def makeUserPrefs_layout(dims: tuple[int], theme: str):
+	config = tmlb.load(f"{os.getcwd()}/config.toml")
 	if theme:
 		sg.theme(theme)
 	layout = [
-		[sg.Text("linewrap: ")],
+		[sg.Text("LineWrap: ")],
 		[sg.Combo(["word", "none"], expand_x=True, default_value=config["user"]["linewrap"], k="-LWPREF-", readonly=True)],
+		[sg.Text("Screen Dimensions: ")],
+		[sg.Combo(["1920x1080", "1280x720", "854x480", "640x360", "426x240"], default_value=config["client"]["client_dimensions"], expand_x=True, readonly=True, k="-DIMSS-")],
 		[sg.Text("Theme: ")],
 		[sg.Listbox(sg.theme_list(), expand_x=True, expand_y=True, k="-THPREF-")],
+		[sg.Text("Hidden Files:")],
+		[sg.Listbox(config["client"]["client_hidden"], k="-C_HIDE-", expand_x=True, expand_y=True)],
+		[sg.Col([[sg.Input(k="-C_HIDE_ADD_-"), sg.Button("+", size=(2, 1), k="-C_HIDE_ADD-"), sg.Button("-", size=(2, 1), k="-C_HIDE_REMOVE-")]], justification="right")],
 		[sg.Button("Save"), sg.Button("Cancel")]
 	]
 	return layout

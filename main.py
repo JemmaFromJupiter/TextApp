@@ -9,16 +9,18 @@ import toml as tmlb
 """Text Editor 1.0"""
 
 themes.init_themes()
+
 config = tmlb.load(f"{os.getcwd()}/config.toml")
 
 class App():
 
-	def __init__(self, title: str, window_dims: tuple[int], theme: str = None):
+	def __init__(self, title: str, theme: str = None):
 		self.title = title
-		self.window_dims = window_dims
+		self.window_dims = list(config["client"]["client_dimensions"].split("x"))
 		self.theme = theme
 
 	def make_window(self, layout, **kwargs):
+		self.window_dims = list(config["client"]["client_dimensions"].split("x"))
 		layout_ = layout
 		return sg.Window(self.title, layout_, size=self.window_dims, **kwargs)
 
@@ -69,8 +71,8 @@ class fileFunctions():
 					print("Path Does Not Exist!")
 
 class Terminal(App):
-	def __init__(self, title: str, window_dims: tuple[int], theme: str = None):
-		super().__init__(title, window_dims, theme)
+	def __init__(self, title: str, theme: str = None):
+		super().__init__(title, theme)
 		self.window = self.make_window(defaultLayouts.makeTerminal_layout(self.window_dims, self.theme), resizable=True, finalize=True)
 
 	def mainloop(self):
@@ -89,8 +91,8 @@ class Terminal(App):
 					print(err)
 
 class About(App):
-	def __init__(self, title: str, window_dims: tuple[int], theme: str = None):
-		super().__init__(title, window_dims, theme)
+	def __init__(self, title: str, theme: str = None):
+		super().__init__(title, theme)
 		self.window = self.make_window(defaultLayouts.makeAbout_layout(self.window_dims, self.theme), resizable=True, finalize=True)
 
 	def mainloop(self):
@@ -99,8 +101,8 @@ class About(App):
 			if event == sg.WINDOW_CLOSED: break
 
 class Console(App):
-	def __init__(self, title: str, window_dims: tuple[int], theme: str = None):
-		super().__init__(title, window_dims, theme)
+	def __init__(self, title: str, theme: str = None):
+		super().__init__(title, theme)
 		self.window = self.make_window(defaultLayouts.makeConsole_layout(self.window_dims, self.theme), resizable=True, finalize=True)
 
 	def mainloop(self):
@@ -112,8 +114,8 @@ class Console(App):
 
 class ThemeCreator(App):
 
-	def __init__(self, title: str, window_dims: tuple[int], theme: str = None):
-		super().__init__(title, window_dims, theme)
+	def __init__(self, title: str, theme: str = None):
+		super().__init__(title, theme)
 		self.layout = None
 		self.window = self.make_window(defaultLayouts.makeTheme_layout(self.window_dims, self.theme), resizable=True, finalize=True)
 
@@ -172,8 +174,8 @@ class ThemeCreator(App):
 				break
 				
 class themeSelector(App):
-	def __init__(self, title: str, window_dims: tuple[int], theme: str = None):
-		super().__init__(title, window_dims, theme)
+	def __init__(self, title: str, theme: str = None):
+		super().__init__(title, theme)
 		self.window = self.make_window(defaultLayouts.makeTh_layout(self.window_dims, self.theme), resizable=True, finalize=True)
 
 	def mainloop(self):
@@ -188,8 +190,8 @@ class themeSelector(App):
 				return values["-SELTHEME-"][0]
 
 class userPrefs(App):
-	def __init__(self, title: str, window_dims: tuple[int], theme: str = None):
-		super().__init__(title, window_dims, theme)
+	def __init__(self, title: str, theme: str = None):
+		super().__init__(title, theme)
 		self.window = self.make_window(defaultLayouts.makeUserPrefs_layout(self.window_dims, self.theme), resizable=True, finalize=True)
 	
 	def save_client_preferences(self):
@@ -205,19 +207,33 @@ class userPrefs(App):
 			print(event, values)
 			if event in (sg.WINDOW_CLOSED, "Cancel"):
 				self.window.close()
-				break
+				return False
+			if event == "-C_HIDE_ADD-":
+				if values["-C_HIDE_ADD_-"] not in self.window["-C_HIDE-"].get_list_values():
+					self.window["-C_HIDE-"].update(values=self.window["-C_HIDE-"].get_list_values() + [values["-C_HIDE_ADD_-"]])
+					self.window["-C_HIDE_ADD_-"].update(value="")
+			if event == "-C_HIDE_REMOVE-":
+				try:
+					ls = list(self.window["-C_HIDE-"].get_list_values())
+					ls.remove(values["-C_HIDE-"][0])
+					self.window["-C_HIDE-"].update(values=ls)
+				except:
+					print("H")
 			if event == "Save":
 				config["user"]["linewrap"] = values["-LWPREF-"]
 				if values["-THPREF-"]:
 					config["user"]["theme"] = values["-THPREF-"][0]
+				if values["-DIMSS-"]:
+					config["client"]["client_dimensions"] = values["-DIMSS-"]
+				config["client"]["client_hidden"] = self.window["-C_HIDE-"].get_list_values()
 				self.save_client_preferences()
 				self.window.close()
-				break
+				return True
 
 class MainApp(App):
 
-	def __init__(self, title: str, window_dims: tuple[int], theme: str = None):
-		super().__init__(title, window_dims, theme)
+	def __init__(self, title: str, theme: str = None):
+		super().__init__(title, theme)
 		self.fileFuncs = fileFunctions()
 		self.currentFileName = None
 		self.file_extension = None
@@ -226,7 +242,6 @@ class MainApp(App):
 		self.text = self.window['-EDITBOX-'].Widget
 		self.text.configure(undo=True)
 		self.configure_lineNums()
-		self.create_window_bindings()
 
 	def create_window_bindings(self):
 		self.window.bind("<Control_L><a>", "Select All")
@@ -245,6 +260,7 @@ class MainApp(App):
 		self.m2.bind('<MouseWheel>', '')
 		self.ratio, self.lines = 0, 0
 		self.configureTextEditSettings()
+		self.create_window_bindings()
 
 	def configureTextEditSettings(self):
 		self.m2.widget.config(wrap=config["user"]["linewrap"])
@@ -299,7 +315,7 @@ class MainApp(App):
 							self.currentFileName = saved_file
 							self.file_extension = self.currentFileName.split(".")[1]
 							self.window.set_title(self.currentFileName)
-						self.console = Console("Console", self.window.size, theme=self.theme)
+						self.console = Console("Console", theme=self.theme)
 						self.console.window["-OUTPUT-"].update(disabled=True)
 						cmd = ""
 						if self.file_extension == "py":
@@ -320,7 +336,7 @@ class MainApp(App):
 					except:
 						print("Could not do that!")
 				if event == "Choose Theme":
-					self.themeSelector = themeSelector("Select Theme", self.window_dims, self.theme)
+					self.themeSelector = themeSelector("Select Theme", self.theme)
 					selected_theme = self.themeSelector.mainloop()
 					if selected_theme:
 						self.theme = selected_theme
@@ -342,18 +358,21 @@ class MainApp(App):
 					clipboard_funcs.redo(self.text)
 				if event == "About...":
 					self.window_dims = self.window.size
-					self.about = About("About", self.window_dims, self.theme)
+					self.about = About("About", self.theme)
 					self.about.mainloop()
 				if event == "Create Theme":
 					self.window_dims = self.window.size
-					self.creThme = ThemeCreator("Theme Creator", self.window_dims, self.theme)
+					self.creThme = ThemeCreator("Theme Creator", self.theme)
 					self.creThme.mainloop()
 					themes.init_themes()
 				if event == "Format Code":
-					autopep8.fix_file(self.currentFileName)
-					self.window["-EDITBOX-"].update(value=open(self.currentFileName, "r").read())
+					try:
+						autopep8.fix_file(self.currentFileName)
+						self.window["-EDITBOX-"].update(value=open(self.currentFileName, "r").read())
+					except:
+						sg.popup_error("Could Not Format File", title="Format Error", modal=False)
 				if event == "Terminal":
-					self.terminal = Terminal("Terminal Window", self.window_dims, self.theme)
+					self.terminal = Terminal("Terminal Window", self.theme)
 					self.terminal.mainloop()
 				if event in ('-EDITBOX-', "Open File", "-FOLDERTREE-"):
 					self.window.refresh()
@@ -368,14 +387,15 @@ class MainApp(App):
 						self.ratio = new_ratio
 						self.m1.set_vscroll_position(self.ratio+(self.ratio//2))
 				if event == "Preferences":
-					self.prefs = userPrefs("Preferences", self.window_dims, self.theme)
-					self.prefs.mainloop()
-					self.theme = config["user"]["theme"]
-					self.window.close()
-					self.window = self.make_window(defaultLayouts.makeMain_layout(self.window_dims, self.theme), resizable=True, finalize=True)
+					self.prefs = userPrefs("Preferences", self.theme)
+					saved = self.prefs.mainloop()
+					if saved:
+						self.theme = config["user"]["theme"]
+						self.window.close()
+						self.window = self.make_window(defaultLayouts.makeMain_layout(self.window_dims, self.theme), resizable=True, finalize=True)
 				if event == "dirnm":
 					config["user"]["browsing_dir"] = values["dirnm"]
-					self.prefs = userPrefs("Preferences", self.window_dims, self.theme)
+					self.prefs = userPrefs("Preferences", self.theme)
 					self.prefs.save_client_preferences()
 					self.prefs.window.close()
 					self.window.close()
@@ -386,5 +406,5 @@ class MainApp(App):
 				raise Exception("Unexpected Error Occurred: Fuck This\n\n", err)
 
 					
-appWin = MainApp(f"{config['client']['client_name']} {config['client']['client_version']}", config["client"]["client_dimensions"], config["user"]["theme"])
+appWin = MainApp(f"{config['client']['client_name']} {config['client']['client_version']}", config["user"]["theme"])
 appWin.mainloop()
