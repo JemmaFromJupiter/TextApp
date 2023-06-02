@@ -8,7 +8,7 @@ git_link = "https://github.com/JemmaFromJupiter"
 client_name = "Jupiter Edits"
 client_version = "1.1.3"
 client_dimensions = "1280x720"
-client_hidden = [ "md", "gitignore", "pyc", "bat", "config", "replit", "nix", "upm", "lock", "cache", "breakpoints", "__pycache__", "toml",]
+client_hidden = [ "md", "gitignore", "pyc", "bat", "config", "replit", "nix", "upm", "lock", "cache", "breakpoints", "__pycache__", "toml", "venv",]
 
 [user]
 linewrap = "word"
