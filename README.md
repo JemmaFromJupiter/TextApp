@@ -5,9 +5,9 @@ Mostly compatible with windows.
 ---
 ## REQUIREMENTS ##
 1. Python
-2. PySimpleGUI
-3. toml
-4. AutoPep8
+2. PySimpleGUI (Python Module)
+3. toml (Python Module)
+4. AutoPep8 (Python Module)
 5. All of the files included in the repo
 
 ---
