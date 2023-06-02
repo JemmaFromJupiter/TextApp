@@ -21,11 +21,9 @@ def do_clipboard_event(event, window, element):
 						element.update("")
 				except:
 						print("Nothing Selected!")
-		if event == "Bold":
-			text = element.Widget.selection_get()
 
 def redo(text):
 	try:
 		text.edit_redo()
 	except:
-		pass
+		print("Nothing to Redo.")
