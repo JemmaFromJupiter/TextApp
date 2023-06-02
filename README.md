@@ -57,5 +57,13 @@ I mostly struggled with creating the line numbers and had to turn to the interne
 ---
 ## WHAT I COULD DO BETTER ##
 
+Thinking about problems on my own was one of the biggest struggles when it came to it. I feel that I could work on my problem solving capabilities a lot more and focus on using the internet less when it comes to solutions for problems. I feel I could do better at creating complex systems without help or solutions given to me, and think of those solutions on my own.
 
 ---
+## Conclusion ##
+
+Overall, this project was very easy, and I got very involved in the creation and maintaining of this application as it was an interesting task to undertake. It was far easier than I expected it to be, but nonetheless there were challenges I faced along the way. My initial proposal had far less features than I actually included in my project, and I am very glad I got to expand on the project as much as I could. This project may be updated for the future, so I hope I can continue to grab your attention.
+
+---
+
+### Final Commit Coming In A Couple Days ###
