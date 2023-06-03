@@ -5,16 +5,16 @@ Cross Compatible With Windows, Cygwyn, Linux and Mac. (Couldn't test mac)
 ---
 ## REQUIREMENTS ##
 1. Python 3.11
-2. PySimpleGUI (Python Module)
-3. toml (Python Module)
-4. AutoPep8 (Python Module)
+2. PySimpleGUI (Python Module) `pip install PySimpleGUI`
+3. toml (Python Module) `pip install toml`
+4. AutoPep8 (Python Module) `pip install --upgrade autopep8`
 5. All of the files included in the repo
 
 ---
 ## HOW TO INSTALL (STEP BY STEP) ##
 1. Download the project as a zip file and then extract it
 2. If not done already, install Python 3.11 (official site, or windows microsoft store)
-3. If not done already, open the terminal/command prompt and type "pip install PySimpleGUI toml autopep8"
+3. If not done already, open the terminal/command prompt and pip install the modules individually.
 4. Place the extracted folder into the programs file (Or wherever comfortable)
 5. Create a shortcut to the "TextApp" batch file
 6. Place the shortcut on the desktop
