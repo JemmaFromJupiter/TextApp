@@ -13,10 +13,12 @@ Mostly compatible with windows.
 ---
 ## HOW TO INSTALL (STEP BY STEP) ##
 1. Download the project as a zip file and then extract it
-2. Place the extracted folder into the programs file (Or wherever comfortable)
-3. Create a shortcut to the "TextApp" batch file
-4. Place the shortcut on the desktop
-5. Enjoy
+2. If not done already, install python (official site, or windows microsoft store)
+3. If not done already, open the terminal/command prompt and type "pip install PySimpleGUI toml autopep8"
+4. Place the extracted folder into the programs file (Or wherever comfortable)
+5. Create a shortcut to the "TextApp" batch file
+6. Place the shortcut on the desktop
+7. Enjoy
 
 ---
 ## MY PROCESS ##
