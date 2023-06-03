@@ -1,6 +1,6 @@
 # TextApp
 Text Editor App Without All Of The Annoying Replit Files
-Mostly compatible with windows.
+Cross Compatible With Windows, Cygwyn, Linux and Mac. (Couldn't test mac)
 
 ---
 ## REQUIREMENTS ##
