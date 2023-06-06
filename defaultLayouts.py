@@ -5,7 +5,25 @@ import sys
 import time
 import toml as tmlb
 
-config = tmlb.load(f"{os.getcwd()}/config.toml")
+lin_dar = ["linux", "darwin"]
+
+win = ["win32", "cygwin"]
+
+class Platform:
+    def __init__(self):
+        self._name = sys.platform
+        self._version = sys.version_info
+
+    def get_sys_str_fmt(self):
+        if self._name in lin_dar:
+            return "/"
+        if self._name in win:
+            return "\\"
+
+
+platform = Platform()
+
+config = tmlb.load(f"{os.getcwd()}{platform.get_sys_str_fmt()}config.toml")
 
 print(sys.platform)
 sys.setrecursionlimit(10000)
@@ -28,23 +46,8 @@ default_theme = """{
 }"""
 
 
-class Platform:
-    def __init__(self):
-        self._name = sys.platform
-        self._version = sys.version_info
-
-    def get_sys_str_fmt(self):
-        if self._name in config["client"]["fmts"]["lin_dar"]:
-            return "/"
-        if self._name in config["client"]["fmts"]["win"]:
-            return "\\"
-
-
-platform = Platform()
-
-
 def get_dir_contents(parent, dirname, treedata):
-    config = tmlb.load(f"{os.getcwd()}/config.toml")
+    config = tmlb.load(f"{os.getcwd()}{platform.get_sys_str_fmt()}config.toml")
     files = os.listdir(dirname)
     for f in files:
         fullname = os.path.join(dirname, f)
@@ -55,7 +58,7 @@ def get_dir_contents(parent, dirname, treedata):
             if _ not in config["client"]["client_hidden"] and idx == len(splt_fullname):
                 if "." in _:
                     _ = _.split(".")
-                    if _[1] not in config["client"]["client_hidden"]:
+                    if _[-1] not in config["client"]["client_hidden"]:
                         treedata.Insert(parent, fullname, f, values=[
                                         os.stat(fullname).st_size], icon=file_icon)
                         break
@@ -74,7 +77,7 @@ def get_dir_contents(parent, dirname, treedata):
 
 
 def makeAbout_layout(dims: tuple[int], theme: str):
-    config = tmlb.load(f"{os.getcwd()}/config.toml")
+    config = tmlb.load(f"{os.getcwd()}{platform.get_sys_str_fmt()}config.toml")
     if theme:
         sg.theme(theme)
 
@@ -122,7 +125,7 @@ Links:
 
 
 def makeTerminal_layout(dims: tuple, theme: str):
-    config = tmlb.load(f"{os.getcwd()}/config.toml")
+    config = tmlb.load(f"{os.getcwd()}{platform.get_sys_str_fmt()}config.toml")
     if theme:
         sg.theme(theme)
     layout = [
@@ -135,7 +138,7 @@ def makeTerminal_layout(dims: tuple, theme: str):
 
 
 def makeConsole_layout(dims: tuple[int], theme: str):
-    config = tmlb.load(f"{os.getcwd()}/config.toml")
+    config = tmlb.load(f"{os.getcwd()}{platform.get_sys_str_fmt()}config.toml")
     if theme:
         sg.theme(theme)
     layout = [
@@ -146,7 +149,7 @@ def makeConsole_layout(dims: tuple[int], theme: str):
 
 
 def makeTh_layout(dims: tuple[int], theme: str):
-    config = tmlb.load(f"{os.getcwd()}/config.toml")
+    config = tmlb.load(f"{os.getcwd()}{platform.get_sys_str_fmt()}config.toml")
     if theme:
         sg.theme(theme)
     layout = [
@@ -159,7 +162,7 @@ def makeTh_layout(dims: tuple[int], theme: str):
 
 
 def makeTheme_layout(dims: tuple[int], theme: str):
-    config = tmlb.load(f"{os.getcwd()}/config.toml")
+    config = tmlb.load(f"{os.getcwd()}{platform.get_sys_str_fmt()}config.toml")
     if theme:
         sg.theme(theme)
 
@@ -227,7 +230,7 @@ def makeTheme_layout(dims: tuple[int], theme: str):
 
 
 def makeUserPrefs_layout(dims: tuple[int], theme: str):
-    config = tmlb.load(f"{os.getcwd()}/config.toml")
+    config = tmlb.load(f"{os.getcwd()}{platform.get_sys_str_fmt()}config.toml")
     if theme:
         sg.theme(theme)
     layout = [
@@ -238,6 +241,7 @@ def makeUserPrefs_layout(dims: tuple[int], theme: str):
         [sg.Combo(["1920x1080", "1280x720", "854x480", "640x360", "426x240"], default_value=config["client"]
                   ["client_dimensions"], expand_x=True, readonly=True, k="-DIMSS-")],
         [sg.Text("Theme: ")],
+        [sg.Input(expand_x=True, enable_events=True, k="-TH_SEARCH-")],
         [sg.Listbox(sg.theme_list(), expand_x=True,
                     expand_y=True, k="-THPREF-")],
         [sg.Text("Hidden Files:")],
@@ -251,7 +255,7 @@ def makeUserPrefs_layout(dims: tuple[int], theme: str):
 
 
 def makeMain_layout(dims: tuple[int], theme: str):
-    config = tmlb.load(f"{os.getcwd()}/config.toml")
+    config = tmlb.load(f"{os.getcwd()}{platform.get_sys_str_fmt()}config.toml")
     if theme:
         sg.theme(theme)
     MenuBar_layout = [

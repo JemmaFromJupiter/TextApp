@@ -13,8 +13,9 @@ import toml as tmlb
 
 themes.init_themes()
 
-config = tmlb.load(f"{os.getcwd()}/config.toml")
+config = tmlb.load(f"{os.getcwd()}{defaultLayouts.platform.get_sys_str_fmt()}config.toml")
 
+print(config["theme"]["themes"])
 
 class App():
 
@@ -184,8 +185,12 @@ class ThemeCreator(App):
 						'PROGRESS_DEPTH': values['-PRGDEP-']
 					}
 				)
-				with open("themes/theme_store.py", "w") as f:
-					f.write(f"theme_dicts = {themes.theme_dicts}")
+				config["theme"]["themes"] = themes.theme_dicts
+				with open(f"{os.getcwd()}{defaultLayouts.platform.get_sys_str_fmt()}config.toml", "wb") as up:
+					up.seek(0)
+					up.write(bytes(tmlb.dumps(config).encode("utf-8")))
+					up.truncate()
+					up.close()
 				self.window.close()
 				break
 			if event == "-THCREATEADVSUBMIT-":
@@ -193,8 +198,12 @@ class ThemeCreator(App):
 				themes.theme_dicts.append(
 					myDict
 				)
-				with open("themes/theme_store.py", "w") as f:
-					f.write(f"theme_dicts = {themes.theme_dicts}")
+				config["theme"]["themes"] = themes.theme_dicts
+				with open(f"{os.getcwd()}{defaultLayouts.platform.get_sys_str_fmt()}config.toml", "wb") as up:
+					up.seek(0)
+					up.write(bytes(tmlb.dumps(config).encode("utf-8")))
+					up.truncate()
+					up.close()
 				self.window.close()
 				break
 
@@ -224,7 +233,7 @@ class userPrefs(App):
 			self.window_dims, self.theme), resizable=True, finalize=True)
 
 	def save_client_preferences(self):
-		with open(f"{os.getcwd()}/config.toml", "wb") as up:
+		with open(f"{os.getcwd()}{defaultLayouts.platform.get_sys_str_fmt()}config.toml", "wb") as up:
 			up.seek(0)
 			up.write(bytes(tmlb.dumps(config).encode("utf-8")))
 			up.truncate()
@@ -249,6 +258,12 @@ class userPrefs(App):
 					self.window["-C_HIDE-"].update(values=ls)
 				except:
 					print("H")
+			if event == "-TH_SEARCH-" and values["-TH_SEARCH-"] != "":
+				search = values["-TH_SEARCH-"]
+				new_values = [x for x in sg.theme_list() if search in x]
+				self.window["-THPREF-"].update(new_values)
+			else:
+				self.window["-THPREF-"].update(sg.theme_list())
 			if event == "Save":
 				config["user"]["linewrap"] = values["-LWPREF-"]
 				if values["-THPREF-"]:
