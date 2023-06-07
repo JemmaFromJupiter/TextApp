@@ -13,7 +13,7 @@ client_hidden = [ "md", "gitignore", "pyc", "bat", "config", "replit", "nix", "u
 [user]
 linewrap = "word"
 theme = "newbie"
-browsing_dir = "C:/Users/16282005/Desktop/TestingFeatures"
+browsing_dir = "current"
 
 [theme]
 [[theme.themes]]
